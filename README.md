@@ -1,6 +1,9 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 # Dealer-app
 =======
+=======
+>>>>>>> aad9d386270eb71af5fa9d5a43a5630216b804de
 # Shopify App Template - Remix
 
 This is a template for building a [Shopify app](https://shopify.dev/docs/apps/getting-started) using the [Remix](https://remix.run) framework.
@@ -372,4 +375,7 @@ This template uses [Remix](https://remix.run). The following Shopify tools are a
 - [App extensions](https://shopify.dev/docs/apps/app-extensions/list)
 - [Shopify Functions](https://shopify.dev/docs/api/functions)
 - [Getting started with internationalizing your app](https://shopify.dev/docs/apps/best-practices/internationalization/getting-started)
+<<<<<<< HEAD
 >>>>>>> aad9d38 (Initial commit)
+=======
+>>>>>>> aad9d386270eb71af5fa9d5a43a5630216b804de
