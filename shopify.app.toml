@@ -1,0 +1,41 @@
+# Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
+
+client_id = "efad862fb03d8d529428b4ba1907c4c7"
+name = "dealer-details-app"
+handle = "dealer-details-app"
+application_url = "https://compiled-latitude-scene-contains.trycloudflare.com"
+embedded = true
+
+[build]
+include_config_on_deploy = true
+automatically_update_urls_on_dev = true
+
+[webhooks]
+api_version = "2025-04"
+
+  [[webhooks.subscriptions]]
+  topics = [ "app/uninstalled" ]
+  uri = "/webhooks/app/uninstalled"
+
+  [[webhooks.subscriptions]]
+  topics = [ "app/scopes_update" ]
+  uri = "/webhooks/app/scopes_update"
+
+[access_scopes]
+# Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
+scopes = "write_products"
+
+[auth]
+redirect_urls = [
+  "https://compiled-latitude-scene-contains.trycloudflare.com/auth/callback",
+  "https://compiled-latitude-scene-contains.trycloudflare.com/auth/shopify/callback",
+  "https://compiled-latitude-scene-contains.trycloudflare.com/api/auth/callback"
+]
+
+[app_proxy]
+url = "https://compiled-latitude-scene-contains.trycloudflare.com"
+subpath = "om-dealer-details"
+prefix = "apps"
+
+[pos]
+embedded = false
