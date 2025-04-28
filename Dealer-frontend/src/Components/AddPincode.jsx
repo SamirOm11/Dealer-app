@@ -1,110 +1,118 @@
-import React, { useState } from "react";
-import "./addPincode.css"
+import React, { useState,useEffect } from "react";
+import "./addPincode.css";
+
+const API_URL = "/apps/om-dealer-details/api/getdealerdetails";
+
 const AddPincode = () => {
-  const [pin, setPin] = useState("");
+  const [pincode, setPincode] = useState("");
   const [dealers, setDealers] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [isAvailable, setIsAvailable] = useState(null);
-  const [selectedDealerId, setSelectedDealerId] = useState(null); // ID of selected 
+  console.log("dealers--", dealers);
+  const [selectedDealer, setSelectedDealer] = useState("");
+  console.log("selectedDealer", selectedDealer);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [noDealersMessage, setNoDealersMessage] = useState("");
+  const [validationMessage, setValidationMessage] = useState("");
 
-  // API URL to fetch dealer data
-  const API_URL = "/apps/om-dealer-details/api/getdealerdetails"; // Replace with your actual API endpoint
+  const validatePincode = (pin) => /^\d{6}$/.test(pin);
 
-  // Check pincode availability
-  const checkPinAvailability = async (pinCode) => {
-    setLoading(true);
+  const handleFindDealers = async () => {
+    if (!validatePincode(pincode)) {
+      setValidationMessage("Please enter a valid 6-digit pincode");
+      setDealers([]);
+      setShowDropdown(false);
+      setNoDealersMessage("");
+      return;
+    }
+    setValidationMessage("");
+
     try {
-      const response = await fetch(`${API_URL}?pinCode=${pinCode}`);
+      const response = await fetch(`${API_URL}?pincode=${pincode}`);
+      if (!response) {
+        throw new Error("Network response was not ok");
+      }
       const data = await response.json();
-      console.log('data---',data);
-      const dealersList = data.dealerDetails || []; // Assuming the response contains a "dealers" field
-      setIsAvailable(dealersList.length > 0);
-      setDealers(dealersList);
-      setSelectedDealerId(null); // Clear selected dealer when a new pincode is entered
+      console.log("data--", data);
+      setDealers(data);
+      setSelectedDealer("");
+      setShowDropdown(data.dealerDetails.length > 0);
+      setNoDealersMessage(
+        data.dealerDetails.length === 0
+          ? "No dealers available for this pincode"
+          : "",
+      );
     } catch (error) {
-      console.error("Error fetching dealer data:", error);
-      setIsAvailable(false);
-      setDealers([]);
-    }
-    setLoading(false);
-  };
-
-  // Handle pincode input change and validate
-  const handleInputChange = (e) => {
-    const value = e.target.value;
-    setPin(value);
-
-    if (value.length === 6 && /^[0-9]+$/.test(value)) {
-      checkPinAvailability(value); // Valid pincode, check availability
-    } else if (value.length === 6) {
-      setIsAvailable(false); // Invalid pincode
-      setDealers([]);
-    } else {
-      setDealers([]);
-      setIsAvailable(null);
+      console.error(error);
+      setNoDealersMessage("Error fetching dealer data");
     }
   };
 
-  // Handle dealer selection (without checkbox)
-  const handleDealerSelect = (dealerId) => {
-    setSelectedDealerId(dealerId === selectedDealerId ? null : dealerId);
+  const saveInfo = async () => {
+    try {
+      await fetch("/cart/update.js", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          attributes: {
+            dealer_name: dealers.name,
+            dealer_id: "12345",
+            pincode: "560001",
+          },
+        }),
+      });
+    } catch (error) {
+      console.log("Error during saveInfo", error);
+    }
   };
+  useEffect(() => {
+    console.log("Function called")
+    saveInfo();
+  }, [selectedDealer]);
 
   return (
     <div className="container">
-      <h2 className="heading">Check Pin & Dealers</h2>
-
+      <label className="pincode">Delivery Area Code</label>
       <div className="input-container">
-        <label className="input-label">
-          Enter Pin:
-          <input
-            value={pin}
-            onChange={handleInputChange}
-            maxLength={6}
-            placeholder="e.g. 560001"
-            className="input-box"
-          />
-        </label>
-
-        {loading && <p className="status-msg">🔄 Checking availability...</p>}
-        {isAvailable === false && (
-          <p className="error-msg">❌ No dealers available for this pin.</p>
-        )}
-
-        {isAvailable && dealers.length > 0 && (
-          <div className="dealer-list-container">
-            <h3>Available Dealers</h3>
-            <ul className="dealer-list">
-              {dealers.map((dealer) => (
-                <li
-                  key={dealer.id}
-                  className={`dealer-item ${selectedDealerId === dealer.id ? "selected" : ""}`}
-                  onClick={() => handleDealerSelect(dealer.id)}
-                >
-                  {dealer.name} - {dealer.phone} <br />
-                  <strong>Address:</strong> {dealer.address} <br />
-                  <strong>City:</strong> {dealer.city} <br />
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
+        <input
+          type="text"
+          id="pincode"
+          placeholder="Enter pincode"
+          value={pincode}
+          onChange={(e) => setPincode(e.target.value.trim())}
+          onKeyDown={(e) => e.key === "Enter" && handleFindDealers()}
+        />
+        <button onClick={handleFindDealers} disabled={!pincode}>
+          Find Dealers
+        </button>
       </div>
 
-      {selectedDealerId && (
-        <div className="selected-dealers">
-          <h3>Selected Dealer</h3>
-          <ul>
-            {dealers
-              .filter((dealer) => dealer.id === selectedDealerId)
-              .map((dealer) => (
-                <li key={dealer.id}>
-                  <strong>{dealer.name}</strong> - {dealer.city} -{" "}
-                  {dealer.phone}
-                </li>
-              ))}
-          </ul>
+      {validationMessage && (
+        <p className="dealer-no-result">{validationMessage}</p>
+      )}
+      {!validationMessage && noDealersMessage && (
+        <p className="dealer-no-result">{noDealersMessage}</p>
+      )}
+      {showDropdown && (
+        <div className="dealer-list">
+          <label htmlFor="dealer-select">Available Dealers</label>
+          <select
+            id="dealer-select"
+            value={selectedDealer}
+            onChange={(e) => setSelectedDealer(e.target.value)}
+          >
+            <option value="">Select a dealer</option>
+            {dealers?.dealerDetails.map((dealer, idx) => (
+              <option key={idx} value={dealer.name}>
+                {dealer.name} — {dealer.city}
+              </option>
+            ))}
+          </select>
         </div>
+      )}
+
+      {selectedDealer && (
+        <div className="selected-dealer">Selected Dealer: {selectedDealer}</div>
       )}
     </div>
   );

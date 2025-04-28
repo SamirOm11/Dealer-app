@@ -1,83 +1,263 @@
-
+/* index.css */
+ 
+/* General Body and Layout */
+body {
+    font-family: Arial, sans-serif;
+    /* display: flex; */
+    /* justify-content: center; */
+    /* align-items: center; */
+    /* height: 100vh; */
+    background-color: #191818;
+    margin: 0;
+}
+ 
+/* Container for centering elements */
 .container {
-    width: 100%;
-    max-width: 600px;
-    margin: 0 auto;
+    display: flow-root;
+    justify-content: center;
+    align-items: center;
     padding: 20px;
-    background-color: #f9f9f9;
+    max-width: 400px;
+    background-color: #fff;
+    border: 1px solid #e5e5e5;
     border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  }
-   
-  .heading {
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+    flex-direction: column;
+}
+ 
+/* Label styling */
+label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 500;
+    color: #333;
+}
+ 
+/* Input container layout */
+.input-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    gap: 20px;
+}
+ 
+/* Input field and select box styling */
+input[type="text"], select {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+}
+ 
+input[type="text"]:focus, select:focus {
+    outline: none;
+    border-color: #0056b3;
+    box-shadow: 0 0 2px rgba(0, 86, 179, 0.2);
+}
+ 
+/* Button styling */
+button {
+    display: inline-block;
+    padding: 4px 10px;
+    background-color: #0056b3;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 10px;
+    font-family: cursive;
+    height: 35px;
+}
+ 
+button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+ 
+/* Dealer List dropdown animation */
+/* .dealer-list {
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease, opacity 0.3s ease;
+} */
+ 
+.dealer-list.show {
+    max-height: 150px;
+    opacity: 1;
+}
+ 
+/* Dealer Search Section */
+.dealer-container {
+    padding: 20px;
+    max-width: 600px;
+    margin: 30px auto;
+    background: #f7f7f7;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     text-align: center;
+}
+ 
+.dealer-heading {
     font-size: 24px;
     color: #333;
     margin-bottom: 20px;
-  }
-   
-  .input-box {
+}
+ 
+.dealer-input, .dealer-dropdown {
+    padding: 10px;
     width: 100%;
-    padding: 10px;
-    margin-bottom: 10px;
-    border: 2px solid #ccc;
-    border-radius: 4px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
     font-size: 16px;
-    outline: none;
-  }
-   
-  .input-box:focus {
-    border-color: #007bff;
-  }
-   
-  .status-msg, .error-msg {
-    text-align: center;
-    font-size: 16px;
-    color: #e74c3c;
-  }
-   
-  .dealer-list-container {
-    margin-top: 20px;
-  }
-   
-  .dealer-list {
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
-  }
-   
-  .dealer-item {
-    padding: 10px;
-    background-color: #fff;
-    border: 1px solid #ddd;
-    margin-bottom: 10px;
-    cursor: pointer;
-    border-radius: 4px;
-    transition: background-color 0.3s ease;
-  }
-   
-  .dealer-item:hover {
-    background-color: #f1f1f1;
-  }
-   
-  .dealer-item.selected {
+    margin-bottom: 20px;
+}
+ 
+.dealer-input {
+    width: 65%;
+    margin-right: 10px;
+}
+ 
+.dealer-button {
+    padding: 10px 20px;
     background-color: #007bff;
     color: white;
-  }
-   
-  .checkbox-container {
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+ 
+.dealer-button:hover {
+    background-color: #0056b3;
+}
+ 
+.dealer-results {
     margin-top: 20px;
+}
+ 
+.dealer-card {
+    background: white;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+ 
+/* Uses your existing “no dealers” style */
+.dealer-no-result {
+    margin-top: 20px;
+    color: red;
+    font-weight: bold;
+}
+ 
+.dealer-selected {
+    margin-top: 20px;
+    padding: 15px;
+    background: #e6f7ff;
+    border-radius: 6px;
+    border: 1px solid #91d5ff;
+}
+ 
+.dealer-change-container {
+    text-align: right;
+    margin-bottom: 8px;
+}
+ 
+.dealer-change-btn {
+    background-color: #f44336;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    font-size: 14px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+ 
+.dealer-change-btn:hover {
+    background-color: #d32f2f;
+}
+ 
+.dealer-item {
     display: flex;
     align-items: center;
-  }
-   
-  .checkbox-container input {
+    margin-bottom: 10px;
+}
+ 
+.dealer-item input {
     margin-right: 10px;
-  }
-   
-  .selected-msg {
-    text-align: center;
+}
+ 
+.dealer-item label {
     font-size: 16px;
-    color: #2ecc71;
-    margin-top: 20px;
-  }
+    color: #333;
+}
+ 
+/* Card item and card content */
+.card-item {
+    width: 320px;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    transition: transform 0.3s ease-in-out;
+}
+ 
+.card-item:hover {
+    transform: scale(1.05);
+}
+ 
+.card-content span {
+    display: block;
+    font-size: 14px;
+    color: gray;
+    margin-bottom: 5px;
+}
+ 
+.card-content h1 {
+    font-size: 24px;
+    margin: 10px 0;
+}
+ 
+.card-details {
+    font-size: 12px;
+    color: darkgray;
+    margin-bottom: 10px;
+}
+ 
+.card-content img {
+    width: 100%;
+    border-radius: 10px;
+    margin: 10px 0;
+}
+ 
+.card-action {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #d9534f;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    margin-top: 10px;
+    cursor: pointer;
+    font-weight: bold;
+}
+ 
+.card-action:hover {
+    background-color: #c9302c;
+}
+ 
+/* Responsive adjustments */
+@media (max-width: 480px) {
+    .container {
+        margin: 10px;
+        padding: 12px;
+    }
+    button {
+        width: 100%;
+        margin-bottom: 12px;
+    }
+}
