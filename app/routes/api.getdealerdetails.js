@@ -9,7 +9,8 @@ export const loader = async ({ request }) => {
 
     console.log("inside trycatch");
     const url = new URL(request.url);
-    const pincode = url.searchParams.get("pinCode");
+    console.log("url---", url);
+    const pincode = url.searchParams.get("pincode");
     console.log("pincode", pincode);
     if (!pincode) {
       return json({ success: false, error: "Pincode not found" });
