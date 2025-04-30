@@ -5,7 +5,7 @@ const orderSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  totalOrders: {
+  orderName: {
     type: Number,
     required: true,
   },
