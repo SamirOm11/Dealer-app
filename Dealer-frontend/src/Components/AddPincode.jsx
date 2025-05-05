@@ -13,16 +13,35 @@ const AddPincode = () => {
   const [product, setProduct] = useState(null);
 
   useEffect(() => {
-    const container = document.getElementById("enter-pincode-app");
-    const data = container?.getAttribute("data-product");
-    if (data) {
-      try {
-        setProduct(JSON.parse(data));
-      } catch (err) {
-        console.error("Error parsing product data:", err);
-      }
+    const gid = window?.ShopifyAnalytics?.meta?.product?.gid;
+    const variants = window?.meta?.product?.variants;
+
+    if (gid && variants?.length > 0) {
+      const productId = gid.split("/").pop();
+      const variantId = variants[0]?.id;
+      setProduct({ id: productId, variantId });
+    } else {
+      console.error("Unable to extract product or variant ID");
     }
-  }, []);
+
+    modifyDefaultAddToCart();
+  }, [selectedDealer]);
+
+  const modifyDefaultAddToCart = () => {
+    const addToCartButtons = document.querySelectorAll(
+      '[name="add"], .product-form__submit',
+    );
+
+    addToCartButtons.forEach((button) => {
+      button.addEventListener("click", (e) => {
+        if (selectedDealer) {
+          e.preventDefault();
+          handleAddToCartWithDealer();
+        }
+        // If no dealer is selected, let the default behavior proceed
+      });
+    });
+  };
 
   const validatePincode = (pin) => /^\d{6}$/.test(pin);
 
@@ -34,12 +53,11 @@ const AddPincode = () => {
       setNoDealersMessage("");
       return;
     }
-
     setValidationMessage("");
+
     try {
       const response = await fetch(`${API_URL}?pincode=${pincode}`);
       const data = await response.json();
-
       setDealers(data?.dealerDetails || []);
       setSelectedDealer("");
       setShowDropdown(data?.dealerDetails?.length > 0);
@@ -54,38 +72,43 @@ const AddPincode = () => {
     }
   };
 
-  const saveDealerToCart = async () => {
-    // if (!selectedDealer || !product) return;
+  const handleAddToCartWithDealer = async () => {
+    if (!selectedDealer || !product?.variantId) {
+      alert("Please select a dealer before adding to cart");
+      return;
+    }
 
     const dealer = dealers.find((d) => d.name === selectedDealer);
-    console.log("dealer", dealer);
+    if (!dealer) return;
 
     try {
-      console.log("Inside saveDealerToCart", dealer, pincode);
-      await fetch("/cart/update.js", {
+      await fetch("/cart/add.js", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          attributes: {
-            dealer_name: dealer.name,
-            // dealer_id: dealer.dealer_id || "unknown",
-            dealer_city: dealer.city,
-            dealer_email: dealer.email,
-            dealer_phone: dealer.phone,
-            dealer_pincode: dealer.pincode,
-            // product_id: product.id,
-            // product_title: product.title,
-          },
+          items: [
+            {
+              id: product.variantId,
+              quantity: 1,
+              properties: {
+                dealer_name: dealer.name,
+                dealer_city: dealer.city,
+                dealer_email: dealer.email,
+                dealer_phone: dealer.phone,
+                dealer_pincode: dealer.pincode,
+              },
+            },
+          ],
         }),
       });
+
+      // Redirect to cart or show success message
+      window.location.href = "/cart";
     } catch (error) {
-      console.error("Error saving dealer to cart:", error);
+      console.error("Error adding to cart:", error);
+      alert("Failed to add product to cart. Please try again.");
     }
   };
-
-  useEffect(() => {
-    saveDealerToCart();
-  }, [selectedDealer]);
 
   return (
     <div className="container">
