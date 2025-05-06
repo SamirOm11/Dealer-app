@@ -38,7 +38,6 @@ const AddPincode = () => {
           e.preventDefault();
           handleAddToCartWithDealer();
         }
-        // If no dealer is selected, let the default behavior proceed
       });
     });
   };
