@@ -2,7 +2,8 @@ import { json } from "@remix-run/node";
 import { authenticate } from "../shopify.server";
 import { shopifyGraphQLRequest } from "./utils/shopifyGraphqlRequestforDealer";
 import { DealerGridDetails } from "../model/dashboardmodel";
-
+// import { createMetafieldDefination } from "./utils/createMetafieldsDefination";
+import { MetafieldStatus } from "../model/metafieldCreated";
 const at = "webhooks.order_create.jsx";
 
 export const action = async ({ request }) => {
@@ -21,11 +22,13 @@ export const action = async ({ request }) => {
     );
 
     const orderId = payload.id;
-    const attributes = payload.note_attributes || [];
-
+    console.log("lineItems", payload.line_items[0].properties);
+    const attributes = payload.line_items[0].properties || [];
+    console.log("attributes", attributes);
     const dealerName = attributes.find(
       (attr) => attr.name === "dealer_name",
     )?.value;
+    console.log("dealerName", dealerName);
     const dealerCity = attributes.find(
       (attr) => attr.name === "dealer_city",
     )?.value;
@@ -43,44 +46,127 @@ export const action = async ({ request }) => {
     const accessToken = session.accessToken;
     console.log("accessToken--", accessToken);
 
-    const mutation = `
-    mutation CreateMetafield($input: MetafieldsSetInput!) {
-      metafieldsSet(metafields: [$input]) {
-        metafields {
-          key
-          namespace
-          value
-          type
-        }
-        userErrors {
-          field
-          message
+    const definitions = [
+      { name: "Dealer Name", key: "dealer_name" },
+      { name: "Dealer City", key: "dealer_city" },
+      { name: "Dealer Email", key: "dealer_email" },
+      { name: "Dealer Pincode", key: "dealer_pincode" },
+    ];
+
+    const existingStatus = await MetafieldStatus.findOne({ shop });
+
+    if (!existingStatus || !existingStatus.metafieldsCreated) {
+      let allCreated = true;
+
+      for (const def of definitions) {
+        const mutation = `
+      mutation {
+        metafieldDefinitionCreate(definition: {
+          name: "${def.name}",
+          namespace: "custom",
+          key: "${def.key}",
+          type: "single_line_text_field",
+          ownerType: ORDER,
+          visibleToStorefrontApi: false,
+          pin:true
+        }) {
+          createdDefinition {
+            id
+          }
+          userErrors {
+            field
+            message
+          }
         }
       }
+    `;
+
+        const response = await shopifyGraphQLRequest({
+          shop,
+          accessToken,
+          query: mutation,
+        });
+
+        const errors = response?.data?.metafieldDefinitionCreate?.userErrors;
+
+        if (errors?.length > 0) {
+          console.warn(`${def.key} definition error:`, errors);
+          allCreated = false;
+        } else {
+          console.log(`${def.key} definition created.`);
+        }
+      }
+
+      if (allCreated) {
+        await MetafieldStatus.updateOne(
+          { shop },
+          { $set: { metafieldsCreated: true } },
+          { upsert: true },
+        );
+      }
     }
-  `;
+
+    const metafieldInputs = [
+      {
+        key: "dealer_name",
+        value: dealerName,
+      },
+      {
+        key: "dealer_city",
+        value: dealerCity,
+      },
+      {
+        key: "dealer_email",
+        value: dealerEmail,
+      },
+      {
+        key: "dealer_pincode",
+        value: dealerPincode,
+      },
+    ];
+
+    const setMetafieldMutation = `
+mutation SetMetafields($metafields: [MetafieldsSetInput!]!) {
+  metafieldsSet(metafields: $metafields) {
+    metafields {
+      key
+      namespace
+      value
+      type
+    }
+    userErrors {
+      field
+      message
+    }
+  }
+}
+`;
+
     const variables = {
-      input: {
+      metafields: metafieldInputs.map((input) => ({
         ownerId: `gid://shopify/Order/${orderId}`,
         namespace: "custom",
-        key: "dealer_info",
-        type: "json",
-        value: JSON.stringify({
-          dealer_name: dealerName,
-          dealer_city: dealerCity,
-          dealer_email: dealerEmail,
-          dealer_pincode: dealerPincode,
-        }),
-      },
+        key: input.key,
+        type: "single_line_text_field",
+        value: input.value,
+      })),
     };
-    await shopifyGraphQLRequest({
+
+    const result = await shopifyGraphQLRequest({
       shop,
       accessToken,
-      query: mutation,
+      query: setMetafieldMutation,
       variables,
     });
 
-    console.log("✅ Dealer metafield saved to order:", orderId);
+    if (result.data.metafieldsSet.userErrors.length > 0) {
+      console.error(
+        "Metafield creation errors:",
+        result.data.metafieldsSet.userErrors,
+      );
+    } else {
+      console.log("All dealer metafields created successfully.");
+    }
 
     const infotodashboard = new DealerGridDetails({
       shop: shop,

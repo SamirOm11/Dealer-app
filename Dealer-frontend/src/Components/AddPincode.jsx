@@ -101,7 +101,6 @@ const AddPincode = () => {
         }),
       });
 
-      // Redirect to cart or show success message
       window.location.href = "/cart";
     } catch (error) {
       console.error("Error adding to cart:", error);
@@ -111,7 +110,7 @@ const AddPincode = () => {
 
   return (
     <div className="container">
-      <label className="pincode">Delivery Area Code</label>
+      <label className="pincode">📍 Delivery Area Code</label>
       <div className="input-container">
         <input
           type="text"
@@ -121,7 +120,11 @@ const AddPincode = () => {
           onChange={(e) => setPincode(e.target.value.trim())}
           onKeyDown={(e) => e.key === "Enter" && handleFindDealers()}
         />
-        <button onClick={handleFindDealers} disabled={!pincode}>
+        <button
+          className="dealer-button"
+          onClick={handleFindDealers}
+          disabled={!pincode}
+        >
           Find Dealers
         </button>
       </div>
@@ -135,7 +138,7 @@ const AddPincode = () => {
 
       {showDropdown && (
         <div className="dealer-list">
-          <label htmlFor="dealer-select">Available Dealers</label>
+          <label htmlFor="dealer-select">🧑‍💼Available Dealers</label>
           <select
             id="dealer-select"
             value={selectedDealer}

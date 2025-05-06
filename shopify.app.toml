@@ -1,17 +1,21 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
-client_id = "6b5845b5325aac64107c05dc38e5d56f"
-name = "dealer-details-app"
-handle = "dealer-details-app-1"
-application_url = "https://setup-planners-violin-geneva.trycloudflare.com"
+client_id = "efad862fb03d8d529428b4ba1907c4c7"
+application_url = "https://singh-grades-references-fixes.trycloudflare.com"
 embedded = true
-
-[build]
-include_config_on_deploy = true
-automatically_update_urls_on_dev = true
+name = "dealer-details-app"
+handle = "dealer-details-app"
 
 [webhooks]
 api_version = "2025-04"
+
+  [[webhooks.subscriptions]]
+  topics = [ "app/scopes_update" ]
+  uri = "/webhooks/app/scopes_update"
+
+  [[webhooks.subscriptions]]
+  topics = [ "app/uninstalled" ]
+  uri = "/webhooks/app/uninstalled"
 
 [access_scopes]
 # Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
@@ -19,15 +23,19 @@ scopes = "read_orders,write_orders,write_products"
 
 [auth]
 redirect_urls = [
-  "https://setup-planners-violin-geneva.trycloudflare.com/auth/callback",
-  "https://setup-planners-violin-geneva.trycloudflare.com/auth/shopify/callback",
-  "https://setup-planners-violin-geneva.trycloudflare.com/api/auth/callback"
+  "https://singh-grades-references-fixes.trycloudflare.com/auth/callback",
+  "https://singh-grades-references-fixes.trycloudflare.com/auth/shopify/callback",
+  "https://singh-grades-references-fixes.trycloudflare.com/api/auth/callback"
 ]
 
 [app_proxy]
-url = "https://setup-planners-violin-geneva.trycloudflare.com"
+url = "https://singh-grades-references-fixes.trycloudflare.com"
 subpath = "om-dealer-details"
 prefix = "apps"
 
 [pos]
 embedded = false
+
+[build]
+automatically_update_urls_on_dev = true
+include_config_on_deploy = true

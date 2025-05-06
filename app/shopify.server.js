@@ -9,9 +9,12 @@ import {
 import { dbconnection } from "./db.server";
 import { MongoDBSessionStorage } from "@shopify/shopify-app-session-storage-mongodb";
 import dotenv from "dotenv";
+import { createMetafieldDefination } from "./routes/utils/createMetafieldsDefination";
+
 dotenv.config();
 dbconnection();
-console.log("Inside the server file",dotenv);
+console.log("Inside the server file", dotenv);
+
 const shopify = shopifyApp({
   apiKey: process.env.SHOPIFY_API_KEY,
   apiSecretKey: process.env.SHOPIFY_API_SECRET || "",
@@ -35,6 +38,7 @@ const shopify = shopifyApp({
   },
   hooks: {
     afterAuth: async ({ session }) => {
+      console.log("session", session);
       console.log("Attempting to register webhooks for shop:", session.shop);
       try {
         await shopify.registerWebhooks({ session });
@@ -63,7 +67,8 @@ const shopify = shopifyApp({
     ? { customShopDomains: [process.env.SHOP_CUSTOM_DOMAIN] }
     : {}),
 });
-console.log("outside the shopifyApp ");
+
+// createMetafieldDefination();
 
 export default shopify;
 export const apiVersion = ApiVersion.January25;
