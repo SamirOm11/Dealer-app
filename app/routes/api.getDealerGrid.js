@@ -2,13 +2,14 @@ import { DealerGridDetails } from "../model/dashboardmodel";
 
 export const loader = async ({ request }) => {
   const origin = request.headers.get("origin");
-
+  console.log("origin", origin);
   const headers = {
     "Access-Control-Allow-Origin": origin || "*",
     "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type",
   };
 
+  console.log("request.mehtod", request.method);
   if (request.method === "OPTIONS") {
     return new Response(null, { status: 204, headers });
   }

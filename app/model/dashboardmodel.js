@@ -9,6 +9,7 @@ const DealerDetailsSchema = new mongoose.Schema(
     customerName: { type: String },
     customerEmail: { type: String },
     pinCode: { type: Number },
+    productTitle: { type: String },
   },
   { timestamps: true },
 );
@@ -16,5 +17,3 @@ const DealerDetailsSchema = new mongoose.Schema(
 export const DealerGridDetails =
   mongoose.models.DealerGrid ||
   mongoose.model("DealerGrid", DealerDetailsSchema);
-
-

@@ -2,27 +2,18 @@ import { json } from "@remix-run/node";
 import { authenticate } from "../shopify.server";
 import { shopifyGraphQLRequest } from "./utils/shopifyGraphqlRequestforDealer";
 import { DealerGridDetails } from "../model/dashboardmodel";
-// import { createMetafieldDefination } from "./utils/createMetafieldsDefination";
 import { MetafieldStatus } from "../model/metafieldCreated";
+import { productDetails } from "../graphql/getProductDetails";
 const at = "webhooks.order_create.jsx";
 
 export const action = async ({ request }) => {
   try {
     console.log("Received Webhook Request in");
-    const { shop, payload, topic, session } =
+    const { shop, payload, topic, session, admin } =
       await authenticate.webhook(request);
-    console.log(
-      "payload---, shop---",
-      "topic",
-      "session-----",
-      payload,
-      shop,
-      topic,
-      session,
-    );
+    console.log("payload---:", payload);
 
     const orderId = payload.id;
-    console.log("lineItems", payload.line_items[0].properties);
     const attributes = payload.line_items[0].properties || [];
     console.log("attributes", attributes);
     const dealerName = attributes.find(
@@ -38,6 +29,10 @@ export const action = async ({ request }) => {
     const dealerPincode = attributes.find(
       (attr) => attr.name === "dealer_pincode",
     )?.value;
+    const productId = payload.line_items[0].product_id;
+    console.log("productId", productId);
+    const productGid = `gid://shopify/Product/${productId}`;
+    console.log("productGid", productGid);
     if (!dealerName || !dealerEmail || !dealerCity || !dealerPincode) {
       console.error("Missing dealer info");
       return json({ success: false });
@@ -90,7 +85,7 @@ export const action = async ({ request }) => {
         const errors = response?.data?.metafieldDefinitionCreate?.userErrors;
 
         if (errors?.length > 0) {
-          console.warn(`${def.key} definition error:`, errors);
+          console.log(`${def.key} definition error:`, errors);
           allCreated = false;
         } else {
           console.log(`${def.key} definition created.`);
@@ -126,7 +121,7 @@ export const action = async ({ request }) => {
     ];
 
     const setMetafieldMutation = `
-mutation SetMetafields($metafields: [MetafieldsSetInput!]!) {
+    mutation SetMetafields($metafields: [MetafieldsSetInput!]!) {
   metafieldsSet(metafields: $metafields) {
     metafields {
       key
@@ -168,14 +163,25 @@ mutation SetMetafields($metafields: [MetafieldsSetInput!]!) {
       console.log("All dealer metafields created successfully.");
     }
 
+    const productDataResponse = await admin.graphql(productDetails, {
+      variables: { productId: productGid },
+    });
+    const productgraphqlresult = await productDataResponse.json();
+
+    console.log("productgraphqlresult", productgraphqlresult);
+    const productName = productgraphqlresult.data.nodes[0].title;
+    console.log("productName", productName);
+
     const infotodashboard = new DealerGridDetails({
       shop: shop,
       orderId: payload.admin_graphql_api_id,
       orderName: payload.name,
       dealerEmail: dealerEmail,
       customerEmail: payload?.customer?.email,
-      pincode: dealerPincode,
+      pinCode: dealerPincode,
+      productTitle: productName,
     });
+    console.log("infotodashboard", infotodashboard);
     await infotodashboard.save();
 
     return new Response("Metafield saved", { status: 200 });
