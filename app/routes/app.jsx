@@ -22,7 +22,7 @@ export default function App() {
         <Link to="/app" rel="home">
           Home
         </Link>
-        <Link to="/app/dealergrid">Additional page</Link>
+        <Link to="/app/dealergrid">Dealer Management</Link>
       </NavMenu>
       <Outlet />
     </AppProvider>

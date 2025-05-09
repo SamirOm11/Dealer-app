@@ -1,7 +1,7 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
 client_id = "efad862fb03d8d529428b4ba1907c4c7"
-application_url = "https://states-gospel-mass-por.trycloudflare.com"
+application_url = "https://ruled-stood-carrying-groundwater.trycloudflare.com"
 embedded = true
 name = "dealer-details-app"
 handle = "dealer-details-app"
@@ -23,13 +23,13 @@ scopes = "read_orders,write_orders,write_products"
 
 [auth]
 redirect_urls = [
-  "https://states-gospel-mass-por.trycloudflare.com/auth/callback",
-  "https://states-gospel-mass-por.trycloudflare.com/auth/shopify/callback",
-  "https://states-gospel-mass-por.trycloudflare.com/api/auth/callback"
+  "https://ruled-stood-carrying-groundwater.trycloudflare.com/auth/callback",
+  "https://ruled-stood-carrying-groundwater.trycloudflare.com/auth/shopify/callback",
+  "https://ruled-stood-carrying-groundwater.trycloudflare.com/api/auth/callback"
 ]
 
 [app_proxy]
-url = "https://states-gospel-mass-por.trycloudflare.com"
+url = "https://ruled-stood-carrying-groundwater.trycloudflare.com"
 subpath = "om-dealer-details"
 prefix = "apps"
 

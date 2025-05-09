@@ -49,8 +49,13 @@ export const action = async ({ request }) => {
     ];
 
     const existingStatus = await MetafieldStatus.findOne({ shop });
-
-    if (!existingStatus || !existingStatus.metafieldsCreated) {
+    console.log("existingStatus", existingStatus);
+    if (
+      !existingStatus ||
+      !existingStatus.metafieldsCreated ||
+      existingStatus === null
+    ) {
+      console.log("Creating metafield definitions...");
       let allCreated = true;
 
       for (const def of definitions) {

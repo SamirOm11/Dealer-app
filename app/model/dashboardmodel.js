@@ -11,7 +11,7 @@ const DealerDetailsSchema = new mongoose.Schema(
     pinCode: { type: Number },
     productTitle: { type: String },
   },
-  { timestamps: true },
+  { timestamps: true }  ,
 );
 
 export const DealerGridDetails =
