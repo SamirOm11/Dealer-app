@@ -8,7 +8,9 @@ export const loader = async ({ request }) => {
     const fromDate = url.searchParams.get("fromDate");
     const toDate = url.searchParams.get("toDate");
     const searchQuery = url.searchParams.get("queryValue");
+    console.log("searchQuery", searchQuery);
     const shop = session.shop;
+    console.log("shop", shop);
     let query = { shop };
     if (fromDate && toDate) {
       query.createdAt = {
@@ -17,26 +19,20 @@ export const loader = async ({ request }) => {
       };
     }
     if (searchQuery) {
+      console.log("Inside searchQuery ");
+      const searchQueryNumber = Number(searchQuery);
+
       query.$or = [
         { dealerEmail: { $regex: searchQuery, $options: "i" } },
         { customerEmail: { $regex: searchQuery, $options: "i" } },
         { productTitle: { $regex: searchQuery, $options: "i" } },
-        { pinCode: { $regex: searchQuery, $options: "i" } },
+        ...(isNaN(searchQueryNumber) ? [] : [{ pinCode: searchQueryNumber }]), // Match pinCode if it's a number
       ];
     }
 
-    // if (searchQuery) {
-    //   query.$or = [
-    //     { orderId: { $regex: searchQuery, $options: "i" } },
-    //     { orderName: { $regex: searchQuery, $options: "i" } },
-    //     { dealerEmail: { $regex: searchQuery, $options: "i" } },
-    //     { customerName: { $regex: searchQuery, $options: "i" } },
-    //     { customerEmail: { $regex: searchQuery, $options: "i" } },
-    //     { pinCode: { $regex: searchQuery, $options: "i" } },
-    //     { productTitle: { $regex: searchQuery, $options: "i" } },
-    //   ];
-    // }
+    console.log("query before data", query);
     const data = await DealerGridDetails.find(query);
+    console.log("query", query);
     console.log("data", data);
 
     return { status: 200, DealerDeatails: data };

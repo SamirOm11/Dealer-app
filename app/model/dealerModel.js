@@ -1,21 +1,14 @@
 import mongoose from "mongoose";
 
-const DealerSchema =new mongoose.Schema({
+const DealerSchema = new mongoose.Schema({
   name: {
     type: String,
   },
-  pincode: {
-    type: Number,
-    required: true,
-  },
-  city: {
+  email: {
     type: String,
   },
-  address: {
+  password: {
     type: String,
-  },
-  phone: {
-    type: Number,
   },
 });
 
