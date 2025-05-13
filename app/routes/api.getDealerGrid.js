@@ -1,9 +1,9 @@
 import { DealerGridDetails } from "../model/dashboardmodel";
 
-export const action = async ({ request }) => {
+export const loader = async ({ request }) => {
   const origin = request.headers.get("origin");
-  const { email } = await request.json();
-  console.log("email", email);
+  // const { email } = await request.json();
+
   const headers = {
     "Access-Control-Allow-Origin": origin || "*",
     "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
@@ -16,6 +16,9 @@ export const action = async ({ request }) => {
 
   try {
     const url = new URL(request.url);
+    console.log("url", url);
+    const email = url.searchParams.get("email");
+    console.log("email after sighnin params", email);
     const shop = url.searchParams.get("shop");
     console.log("shop", shop);
     const fromDate = url.searchParams.get("fromDate");
@@ -52,6 +55,8 @@ export const action = async ({ request }) => {
         },
       },
     ]);
+
+    console.log("getDealerDataByEmail", getDealerDataByEmail);
 
     return new Response(
       JSON.stringify({ status: 200, data: getDealerDataByEmail }),

@@ -1,7 +1,7 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
 client_id = "efad862fb03d8d529428b4ba1907c4c7"
-application_url = "https://oliver-luck-accessed-cg.trycloudflare.com"
+application_url = "https://workflow-df-cordless-restaurants.trycloudflare.com"
 embedded = true
 name = "dealer-details-app"
 handle = "dealer-details-app"
@@ -23,13 +23,13 @@ scopes = "read_orders,write_orders,write_products"
 
 [auth]
 redirect_urls = [
-  "https://oliver-luck-accessed-cg.trycloudflare.com/auth/callback",
-  "https://oliver-luck-accessed-cg.trycloudflare.com/auth/shopify/callback",
-  "https://oliver-luck-accessed-cg.trycloudflare.com/api/auth/callback"
+  "https://workflow-df-cordless-restaurants.trycloudflare.com/auth/callback",
+  "https://workflow-df-cordless-restaurants.trycloudflare.com/auth/shopify/callback",
+  "https://workflow-df-cordless-restaurants.trycloudflare.com/api/auth/callback"
 ]
 
 [app_proxy]
-url = "https://oliver-luck-accessed-cg.trycloudflare.com"
+url = "https://workflow-df-cordless-restaurants.trycloudflare.com"
 subpath = "om-dealer-details"
 prefix = "apps"
 

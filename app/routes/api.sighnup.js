@@ -10,21 +10,21 @@ export const action = async ({ request }) => {
     "Access-Control-Allow-Headers": "Content-Type",
   };
   const form = await request.formData();
-  const dealerName = form.get("dealerName");
-  const dealerEmail = form.get("dealerEmail");
-  const dealerPassword = form.get("dealerPassword");
+  const dealerName = form.get("name");
+  const dealerEmail = form.get("email");
+  const dealerPassword = form.get("password");
 
   try {
     if (!dealerName || !dealerEmail || !dealerPassword) {
       return { status: 400, message: "All fields are required", headers };
     }
-    if (dealerPassword.length > 6) {
-      return {
-        status: 400,
-        message: "Password must be atleast 6 characters",
-        headers,
-      };
-    }
+    // if (dealerPassword.length > 6) {
+    //   return {
+    //     status: 400,
+    //     message: "Password must be atleast 6 characters",
+    //     headers,
+    //   };
+    // }
     const user = await Dealer.findOne({ dealerEmail });
     if (user) {
       return { status: 409, message: "user already exists", headers };
