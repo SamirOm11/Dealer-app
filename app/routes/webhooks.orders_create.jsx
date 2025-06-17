@@ -4,22 +4,22 @@ import { shopifyGraphQLRequest } from "./utils/shopifyGraphqlRequestforDealer";
 import { DealerGridDetails } from "../model/dashboardmodel";
 import { MetafieldStatus } from "../model/metafieldCreated";
 import { productDetails } from "../graphql/getProductDetails";
+import { sendDealerEmail } from "./services/sendemail";
+import { getOrderStatus } from "../graphql/getOrderFullfimentStatus";
+// import { getOrderDetails } from "../graphql/getOrderDetails";
 const at = "webhooks.order_create.jsx";
 
 export const action = async ({ request }) => {
+  console.log('Webhook triggered:', at);
   try {
-    console.log("Received Webhook Request in");
     const { shop, payload, topic, session, admin } =
       await authenticate.webhook(request);
-    console.log("payload---:", payload);
-
+    // console.log("payload", payload);
     const orderId = payload.id;
     const attributes = payload.line_items[0].properties || [];
-    console.log("attributes", attributes);
     const dealerName = attributes.find(
       (attr) => attr.name === "dealer_name",
     )?.value;
-    console.log("dealerName", dealerName);
     const dealerCity = attributes.find(
       (attr) => attr.name === "dealer_city",
     )?.value;
@@ -30,16 +30,13 @@ export const action = async ({ request }) => {
       (attr) => attr.name === "dealer_pincode",
     )?.value;
     const productId = payload.line_items[0].product_id;
-    console.log("productId", productId);
     const productGid = `gid://shopify/Product/${productId}`;
-    console.log("productGid", productGid);
     if (!dealerName || !dealerEmail || !dealerCity || !dealerPincode) {
       console.error("Missing dealer info");
       return json({ success: false });
     }
 
     const accessToken = session.accessToken;
-    console.log("accessToken--", accessToken);
 
     const definitions = [
       { name: "Dealer Name", key: "dealer_name" },
@@ -49,7 +46,6 @@ export const action = async ({ request }) => {
     ];
 
     const existingStatus = await MetafieldStatus.findOne({ shop });
-    console.log("existingStatus", existingStatus);
     if (
       !existingStatus ||
       !existingStatus.metafieldsCreated ||
@@ -173,9 +169,30 @@ export const action = async ({ request }) => {
     });
     const productgraphqlresult = await productDataResponse.json();
 
-    console.log("productgraphqlresult", productgraphqlresult);
     const productName = productgraphqlresult.data.nodes[0].title;
-    console.log("productName", productName);
+    sendDealerEmail({
+      to: dealerEmail,
+      subject: `New Customer Order Received`,
+      text: `Dear Dealer,
+ 
+You have received a new order from a customer. Please find the order details below:
+ 
+Order Name: ${payload.name}  
+Product: ${productName}  
+Pincode: ${dealerPincode}
+ 
+Kindly proceed with processing this order as soon as possible.
+ 
+Thank you,  
+Dealer App Team`,
+    });
+    const orderDataResponse = await admin.graphql(getOrderStatus, {
+      variables: { orderId: payload.admin_graphql_api_id },
+    });
+    const ordergraphqlresult = await orderDataResponse.json();
+    const orderStatus =
+      ordergraphqlresult.data.nodes[0].displayFulfillmentStatus;
+    console.log("orderStatus", orderStatus);
 
     const infotodashboard = new DealerGridDetails({
       shop: shop,
@@ -185,11 +202,14 @@ export const action = async ({ request }) => {
       customerEmail: payload?.customer?.email,
       pinCode: dealerPincode,
       productTitle: productName,
+      financialStatus: payload.financial_status,
+      customerName: payload.customer?.first_name,
+      customerLastName: payload.customer?.last_name,
+      quantity: payload.line_items[0].quantity,
+      displayFulfillmentStatus: orderStatus,
     });
-    console.log("infotodashboard", infotodashboard);
-    await infotodashboard.save();
-
-    return new Response("Metafield saved", { status: 200 });
+    const databseresponse = await infotodashboard.save();
+    return { status: 200, databseresponse };
   } catch (error) {
     console.error("Error processing webhook:", error);
     return new Response();

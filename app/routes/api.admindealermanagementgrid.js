@@ -6,7 +6,9 @@ export const loader = async ({ request }) => {
     const { admin, session } = await authenticate.admin(request);
     const url = new URL(request.url);
     const fromDate = url.searchParams.get("fromDate");
+    console.log("fromDate", fromDate);
     const toDate = url.searchParams.get("toDate");
+    console.log("toDate", toDate);
     const searchQuery = url.searchParams.get("queryValue");
     console.log("searchQuery", searchQuery);
     const shop = session.shop;
@@ -26,7 +28,7 @@ export const loader = async ({ request }) => {
         { dealerEmail: { $regex: searchQuery, $options: "i" } },
         { customerEmail: { $regex: searchQuery, $options: "i" } },
         { productTitle: { $regex: searchQuery, $options: "i" } },
-        ...(isNaN(searchQueryNumber) ? [] : [{ pinCode: searchQueryNumber }]), // Match pinCode if it's a number
+        ...(isNaN(searchQueryNumber) ? [] : [{ pinCode: searchQueryNumber }]), 
       ];
     }
 

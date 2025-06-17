@@ -10,8 +10,12 @@ const DealerDetailsSchema = new mongoose.Schema(
     customerEmail: { type: String },
     pinCode: { type: Number },
     productTitle: { type: String },
+    financialStatus: { type: String },
+    customerLastName: { type: String },
+    quantity: { type: Number },
+    displayFulfillmentStatus: { type: String },
   },
-  { timestamps: true }  ,
+  { timestamps: true },
 );
 
 export const DealerGridDetails =

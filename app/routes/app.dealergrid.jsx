@@ -14,7 +14,7 @@ import {
 import React, { useState, useEffect, useCallback } from "react";
 import DateRangePicker from "../components/DatePicker";
 
-const DealerGrid = () => {
+const DealerGrid = async () => {
   const [dealerData, setDealersData] = useState([]);
   const [selectedDate, setSelectedDate] = useState("");
   const [queryValue, setQueryValue] = useState("");
@@ -273,6 +273,7 @@ const DealerGrid = () => {
         ),
       )
     : null;
+
 
   return (
     <Page title="Dealer Management Table">

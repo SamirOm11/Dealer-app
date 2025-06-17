@@ -1,41 +1,33 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
-client_id = "efad862fb03d8d529428b4ba1907c4c7"
-application_url = "https://workflow-df-cordless-restaurants.trycloudflare.com"
+client_id = "f42bce4a2d029d2186139116d95dab85"
+application_url = " https://reduces-mls-stephen-exclusion.trycloudflare.com"
 embedded = true
-name = "dealer-details-app"
-handle = "dealer-details-app"
+name = "Dealer-management-system"
+handle = "dealer-management-system"
+
+[build]
+include_config_on_deploy = true
+automatically_update_urls_on_dev = true
 
 [webhooks]
 api_version = "2025-04"
 
-  [[webhooks.subscriptions]]
-  topics = [ "app/scopes_update" ]
-  uri = "/webhooks/app/scopes_update"
-
-  [[webhooks.subscriptions]]
-  topics = [ "app/uninstalled" ]
-  uri = "/webhooks/app/uninstalled"
-
 [access_scopes]
 # Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
-scopes = "read_orders,write_orders,write_products"
-
-[auth]
-redirect_urls = [
-  "https://workflow-df-cordless-restaurants.trycloudflare.com/auth/callback",
-  "https://workflow-df-cordless-restaurants.trycloudflare.com/auth/shopify/callback",
-  "https://workflow-df-cordless-restaurants.trycloudflare.com/api/auth/callback"
-]
+scopes = "read_assigned_fulfillment_orders,read_customers,read_fulfillments,read_merchant_managed_fulfillment_orders,read_orders,read_third_party_fulfillment_orders,write_fulfillments,write_orders,write_products"
 
 [app_proxy]
-url = "https://workflow-df-cordless-restaurants.trycloudflare.com"
+url = "https://reduces-mls-stephen-exclusion.trycloudflare.com"
 subpath = "om-dealer-details"
 prefix = "apps"
 
+[auth]
+redirect_urls = [
+  "https://reduces-mls-stephen-exclusion.trycloudflare.com/auth/callback",
+  "https://reduces-mls-stephen-exclusion.trycloudflare.com/auth/shopify/callback",
+  "https://reduces-mls-stephen-exclusion.trycloudflare.com/api/auth/callback"
+]
+
 [pos]
 embedded = false
-
-[build]
-automatically_update_urls_on_dev = true
-include_config_on_deploy = true
